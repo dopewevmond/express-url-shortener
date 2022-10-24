@@ -11,3 +11,10 @@
 - the `package-lock.json` generated previously by `npm` was deleted because a warning was displayed in the terminal after running `yarn install`
 - `yarn start` was run to start the server with `nodemon` which was previously installed
 - yarn was able to install the dependencies from the `package.json` file created by npm
+
+#### trial 2
+- deleted `node_modules`, `yarn.lock` and `package.json` to try and start the whole package installation process with yarn
+- run `yarn init` to start a new yarn project in the root directory
+- `package.json` file gets created
+- run `yarn add express body-parser pug` to install the dependencies. they are added as dependencies in the `package.json` file
+- an entry was added in the `scripts` section of the `package.json` file to start the server with `nodemon` (previously installed with npm) everytime `yarn start`
