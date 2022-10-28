@@ -1,16 +1,27 @@
 {
   "name": "url-shortener",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
-  "repository": "https://github.com/dopewevmond/express-url-shortener.git",
-  "author": "dopewevmond <dopewevmond@gmail.com>",
-  "license": "MIT",
+  "type": "commonjs",
   "scripts": {
-    "start": "nodemon server.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node ./src/server.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dopewevmond/express-url-shortener.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dopewevmond/express-url-shortener/issues"
+  },
+  "homepage": "https://github.com/dopewevmond/express-url-shortener#readme",
   "dependencies": {
-    "body-parser": "^1.20.1",
     "express": "^4.18.2",
-    "pug": "^3.0.2"
+    "pug": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
   }
 }
