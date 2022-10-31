@@ -1,72 +1,71 @@
-import Controller from "./controller.interface";
-import { Router, Request, Response, NextFunction } from "express";
-import { isValidURL, shortenURL } from '../helper';
+import Controller from './controller.interface'
+import { Router, Request, Response, NextFunction } from 'express'
+import { isValidURL, shortenURL } from '../helper'
 
-let links: {id: string, link: string}[] = [];
+let links: Array<{ id: string, link: string }> = []
 
 class MainRouter implements Controller {
-    public path = '/';
-    public router = Router();
+  public path = '/'
+  public router = Router()
 
-    constructor() {
-        this.setupRoutes();
-    }
+  constructor () {
+    this.setupRoutes()
+  }
 
-    private setupRoutes() {        
-        this.router.get(this.path, this.homeHandlerGet);
-        this.router.get(this.path + 'shorten', this.shortenHandlerGet);
-        this.router.post(this.path + 'shorten', this.checkUrlValidity, this.shortenHandlerPost);
-        this.router.get(this.path + 'rd/:rd_id', this.redirectToLongURL);
-    }
+  private setupRoutes (): void {
+    this.router.get(this.path, this.homeHandlerGet)
+    this.router.get(this.path + 'shorten', this.shortenHandlerGet)
+    this.router.post(this.path + 'shorten', this.checkUrlValidity, this.shortenHandlerPost)
+    this.router.get(this.path + 'rd/:rd_id', this.redirectToLongURL)
+  }
 
-    private homeHandlerGet(req: Request, res: Response) {
-        res.render('index', {try_shorten: false});
-    }
+  private homeHandlerGet (req: Request, res: Response): void {
+    res.render('index', { try_shorten: false })
+  }
 
-    private shortenHandlerGet(req: Request, res: Response) {
-        res.redirect('/');
-    }
+  private shortenHandlerGet (req: Request, res: Response): void {
+    res.redirect('/')
+  }
 
-    private checkUrlValidity (req: Request, res: Response, next: NextFunction) {
-        req.body.isValid = false;
-        if (isValidURL(req.body.url)) {
-            req.body.isValid = true;
-        }
-        next();
+  private checkUrlValidity (req: Request, res: Response, next: NextFunction): void {
+    req.body.isValid = false
+    if (isValidURL(req.body.url)) {
+      req.body.isValid = true
     }
+    next()
+  }
 
-    private shortenHandlerPost(req: Request, res: Response) {
-        const template_data = {try_shorten: true, isvalid: false, orig_link: "", shortened_link: ""};
-    if (req.body.isValid) {
-        let shortened_url = shortenURL(req.body.url);
+  private shortenHandlerPost (req: Request, res: Response): void {
+    const templateData = { try_shorten: true, isvalid: false, orig_link: '', shortened_link: '' }
+    const linkValidity: boolean = req.body.isValid
+    if (linkValidity) {
+      let shortenedUrl = shortenURL(req.body.url)
 
-        // even though its unlikely we should still check if there's a saved link with the same ID
-        // as this newly generated one before inserting into links array
-        while (links.filter(l => l.id === shortened_url.id).length > 0) {
-            shortened_url = shortenURL(req.body.url);
-        }
-        links = [...links, shortened_url];
+      // even though its unlikely we should still check if there's a saved link with the same ID
+      // as this newly generated one before inserting into links array
+      while (links.filter(l => l.id === shortenedUrl.id).length > 0) {
+        shortenedUrl = shortenURL(req.body.url)
+      }
+      links = [...links, shortenedUrl]
 
-        template_data.isvalid = true;
-        template_data.orig_link = req.body.url;
-        template_data.shortened_link = shortened_url.id;
+      templateData.isvalid = true
+      templateData.orig_link = req.body.url
+      templateData.shortened_link = shortenedUrl.id
+    } else {
+      templateData.isvalid = false
     }
-    else {
-        template_data.isvalid = false;
-    }
-    res.render('index', template_data);
-    }
+    res.render('index', templateData)
+  }
 
-    private redirectToLongURL(req: Request, res: Response) {
-        const rd_id = req.params.rd_id;
-        let surl = links.filter(shortened_url => shortened_url.id === rd_id);
-        if (surl.length > 0) {
-            res.redirect(surl[0].link);
-        }
-        else {
-            res.render('not_found');
-        }
+  private redirectToLongURL (req: Request, res: Response): void {
+    const rdId = req.params.rd_id
+    const surl = links.filter(shortenedUrl => shortenedUrl.id === rdId)
+    if (surl.length > 0) {
+      res.redirect(surl[0].link)
+    } else {
+      res.render('not_found')
     }
+  }
 };
 
-export default MainRouter;
+export default MainRouter
