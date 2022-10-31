@@ -5,7 +5,8 @@
     "outDir": "./dist",
     "baseUrl": "./src",
     "module": "CommonJS",
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "strictNullChecks": true
   },
   "include": [
     "src/**/*.ts"
