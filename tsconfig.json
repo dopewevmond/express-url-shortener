@@ -6,12 +6,10 @@
     "baseUrl": "./src",
     "module": "CommonJS",
     "moduleResolution": "Node",
+    "noImplicitAny": true,
     "strictNullChecks": true
   },
   "include": [
     "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
   ]
 }
