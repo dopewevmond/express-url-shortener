@@ -10,7 +10,7 @@ class App {
     this.app = express()
     this.setupApplication()
     controllers.forEach(controller => {
-      this.app.use('/', controller.router)
+      this.app.use(controller.path, controller.router)
     })
   }
 
@@ -25,7 +25,7 @@ class App {
     this.app.set('view engine', 'pug')
   }
 
-  private loggerMiddleware (request: express.Request, response: express.Response, next): void {
+  private loggerMiddleware (request: express.Request, response: express.Response, next: express.NextFunction): void {
     const method: string = request.method
     const path: string = request.path
     console.log(`${method} ${path}`)
