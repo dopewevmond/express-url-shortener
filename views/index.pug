@@ -14,17 +14,31 @@ html
                 br 
                 input(type="submit" value="Shorten link")
 
-            if try_shorten
+            //- if try_shorten
+            //-     .results
+            //-         h2 Results
+            //-         if !isvalid
+            //-             p Please enter a valid link to continue
+            //-         else
+            //-             div
+            //-                 span(class="bold") Original: 
+            //-                 a(href=orig_link, target="_blank") #{orig_link}
+            //-             div 
+            //-                 span(class="bold") Shortened: 
+            //-                 a(href='/rd/' + shortened_link, target="_blank" class="short-link") #{shortened_link}
+            //-                 button(class="copy-button") Copy to clipboard
+            
+            if shortened_links
                 .results
-                    h2 Results
-                    if !isvalid
-                        p Please enter a valid link to continue
-                    else
-                        div
+                    h2 Shortened links
+                    each linkk, idx in shortened_links
+                        div 
                             span(class="bold") Original: 
-                            a(href=orig_link, target="_blank") #{orig_link}
+                            a(href=linkk.link, target="_blank") #{linkk.link}
                         div 
                             span(class="bold") Shortened: 
-                            a(href='/rd/' + shortened_link, target="_blank" class="short-link") #{shortened_link}
-                            button(class="copy-button") Copy to clipboard
+                            a(href='/rd/' + linkk.id, data-id=idx, target="_blank" class="short-link") #{linkk.id}     
+                            button(class="copy-button", data-id=idx) Copy to clipboard
+            
+            
         script(src="/public/script.js") 
