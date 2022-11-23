@@ -2,7 +2,7 @@ import * as express from 'express'
 import * as bodyparser from 'body-parser'
 import Controller from './controllers/controller.interface'
 import * as path from 'path'
-import AppError from 'exceptions/exception.apperror'
+import AppError from './exceptions/exception.apperror'
 import * as morgan from 'morgan'
 
 class App {
@@ -18,6 +18,7 @@ class App {
     })
     // adding error handling middleware after mounting all controllers
     this.app.use(this.ErrorHandlerMiddleware)
+    this.app.use(this.NotFoundError)
   }
 
   /**
@@ -30,9 +31,14 @@ class App {
     this.app.set('view engine', 'pug')
   }
 
-  private ErrorHandlerMiddleware (err: AppError, req: express.Request, res: express.Response, next: express.NextFunction): void {
+  private ErrorHandlerMiddleware (error: AppError, req: express.Request, res: express.Response, next: express.NextFunction): void {
     // res.status(err.statusCode).json({ message: err.message })
-    res.status(err.statusCode).render('error', { err })
+    res.status(error.statusCode).render('error', { error })
+  }
+
+  private NotFoundError (req: express.Request, res: express.Response, next: express.NextFunction): void {
+    const error = new AppError(404, 'The page you\'re requesting for was not found')
+    res.status(error.statusCode).render('error', { error })
   }
 
   public listen (): void {
