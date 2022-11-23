@@ -7,5 +7,10 @@ html
     body
         .container
             h1 URL shortener 
+            p Oops. An error occurred
 
-            p The link you&apos;re trying to access was not found
+            p #{err.message}
+            //- p The link you&apos;re trying to access was not found
+
+            p Click here to return 
+                a(href='/') Home

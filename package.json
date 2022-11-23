@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/dopewevmond/express-url-shortener#readme",
   "dependencies": {
+    "@types/morgan": "^1.9.3",
     "express": "^4.18.2",
+    "morgan": "^1.10.0",
     "pug": "^3.0.2"
   },
   "devDependencies": {
