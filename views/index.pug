@@ -13,20 +13,6 @@ html
                     input(type="text" placeholder="Enter link to shorten" name="url" class="input-link")
                 br 
                 input(type="submit" value="Shorten link")
-
-            //- if try_shorten
-            //-     .results
-            //-         h2 Results
-            //-         if !isvalid
-            //-             p Please enter a valid link to continue
-            //-         else
-            //-             div
-            //-                 span(class="bold") Original: 
-            //-                 a(href=orig_link, target="_blank") #{orig_link}
-            //-             div 
-            //-                 span(class="bold") Shortened: 
-            //-                 a(href='/rd/' + shortened_link, target="_blank" class="short-link") #{shortened_link}
-            //-                 button(class="copy-button") Copy to clipboard
             
             if shortened_links
                 .results

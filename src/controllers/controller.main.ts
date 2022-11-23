@@ -1,9 +1,13 @@
 import Controller from './controller.interface'
 import { Router, Request, Response, NextFunction } from 'express'
 import { isValidURL, shortenURL } from '../helper'
+import AppError from '../exceptions/exception.apperror'
 
 let links: Array<{ id: string, link: string }> = []
 
+interface ITemplateData {
+  shortened_links: Array<{ id: string, link: string }>
+}
 class MainRouter implements Controller {
   public path = '/'
   public router = Router()
@@ -20,7 +24,8 @@ class MainRouter implements Controller {
   }
 
   private homeHandlerGet (req: Request, res: Response): void {
-    res.render('index', { try_shorten: false })
+    const templateData: ITemplateData = { shortened_links: links }
+    res.render('index', templateData)
   }
 
   private shortenHandlerGet (req: Request, res: Response): void {
@@ -28,42 +33,34 @@ class MainRouter implements Controller {
   }
 
   private checkUrlValidity (req: Request, res: Response, next: NextFunction): void {
-    req.body.isValid = false
-    if (isValidURL(req.body.url)) {
-      req.body.isValid = true
+    const url = req.body.url
+    if (typeof url === 'string' && isValidURL(url)) {
+      next()
+    } else {
+      const error = new AppError(400, 'The link you tried to shorten is not valid. Please try again')
+      next(error)
     }
-    next()
   }
 
   private shortenHandlerPost (req: Request, res: Response): void {
-    const templateData = { try_shorten: true, isvalid: false, orig_link: '', shortened_link: '' }
-    const linkValidity: boolean = req.body.isValid
-    if (linkValidity) {
-      let shortenedUrl = shortenURL(req.body.url)
-
-      // even though its unlikely we should still check if there's a saved link with the same ID
-      // as this newly generated one before inserting into links array
-      while (links.filter(l => l.id === shortenedUrl.id).length > 0) {
-        shortenedUrl = shortenURL(req.body.url)
-      }
-      links = [...links, shortenedUrl]
-
-      templateData.isvalid = true
-      templateData.orig_link = req.body.url
-      templateData.shortened_link = shortenedUrl.id
-    } else {
-      templateData.isvalid = false
+    let shortenedUrl = shortenURL(req.body.url)
+    while (links.filter(l => l.id === shortenedUrl.id).length > 0) {
+      shortenedUrl = shortenURL(req.body.url)
+    }
+    links = [...links, shortenedUrl]
+    const templateData: ITemplateData = {
+      shortened_links: links
     }
     res.render('index', templateData)
   }
 
-  private redirectToLongURL (req: Request, res: Response): void {
+  private redirectToLongURL (req: Request, res: Response, next: NextFunction): void {
     const rdId = req.params.rd_id
     const surl = links.filter(shortenedUrl => shortenedUrl.id === rdId)
-    if (surl.length > 0) {
+    try {
       res.redirect(surl[0].link)
-    } else {
-      res.render('not_found')
+    } catch (_e) {
+      next(new AppError(404, 'The link cannot be found'))
     }
   }
 };
