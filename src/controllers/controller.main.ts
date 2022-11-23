@@ -20,6 +20,7 @@ class MainRouter implements Controller {
     this.router.get(this.path, this.homeHandlerGet)
     this.router.get(this.path + 'shorten', this.shortenHandlerGet)
     this.router.post(this.path + 'shorten', this.checkUrlValidity, this.shortenHandlerPost)
+    this.router.patch(this.path + 'shorten/:url_id', this.changeLongUrl)
     this.router.get(this.path + 'rd/:rd_id', this.redirectToLongURL)
   }
 
@@ -61,6 +62,19 @@ class MainRouter implements Controller {
       res.redirect(surl[0].link)
     } catch (_e) {
       next(new AppError(404, 'The link cannot be found'))
+    }
+  }
+
+  private changeLongUrl (req: Request, res: Response, next: NextFunction): void {
+    const urlId = req.params.url_id
+    const newLongLink = req.body.longLink
+    const surl = links.find(shortenedUrl => shortenedUrl.id === urlId)
+
+    if (surl != null && newLongLink != null) {
+      surl.link = newLongLink
+      res.json({ message: 'changed' })
+    } else {
+      next(new AppError(400, 'Check the link ID and make sure you\'re passing the new link'))
     }
   }
 };
