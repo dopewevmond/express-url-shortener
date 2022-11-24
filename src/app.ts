@@ -2,6 +2,7 @@ import * as express from 'express'
 import * as bodyparser from 'body-parser'
 import Controller from './controllers/controller.interface'
 import * as path from 'path'
+import * as Sentry from '@sentry/node'
 import AppError from './exceptions/exception.apperror'
 import * as morgan from 'morgan'
 
@@ -11,11 +12,17 @@ class App {
 
   constructor (controllers: Controller[]) {
     this.app = express()
+    Sentry.init({ dsn: 'https://b76619ae6aa641258556f6cc028ef7a4@o4504203419648000.ingest.sentry.io/4504203423711232' })
+    this.app.use(Sentry.Handlers.requestHandler())
+
     this.app.use(morgan('dev'))
     this.setupApplication()
     controllers.forEach(controller => {
       this.app.use(controller.path, controller.router)
     })
+
+    this.app.use(Sentry.Handlers.errorHandler())
+
     // adding error handling middleware after mounting all controllers
     this.app.use(this.ErrorHandlerMiddleware)
     this.app.use(this.NotFoundError)
