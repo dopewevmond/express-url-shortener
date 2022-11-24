@@ -2,6 +2,7 @@ import Controller from './controller.interface'
 import { Router, Request, Response, NextFunction } from 'express'
 import { isValidURL, shortenURL } from '../helper'
 import AppError from '../exceptions/exception.apperror'
+import * as QRCode from 'qrcode'
 
 let links: Array<{ id: string, link: string }> = []
 
@@ -22,6 +23,9 @@ class MainRouter implements Controller {
     this.router.post(this.path + 'shorten', this.checkUrlValidity, this.shortenHandlerPost)
     this.router.patch(this.path + 'shorten/:url_id', this.changeLongUrl)
     this.router.get(this.path + 'rd/:rd_id', this.redirectToLongURL)
+    this.router.get(this.path + 'qrcode', this.qrCodeHandlerGet)
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    this.router.post(this.path + 'qrcode', this.checkUrlValidity, this.qrCodeHandlerPost)
   }
 
   private homeHandlerGet (req: Request, res: Response): void {
@@ -76,6 +80,24 @@ class MainRouter implements Controller {
     } else {
       next(new AppError(400, 'Check the link ID and make sure you\'re passing the new link'))
     }
+  }
+
+  private qrCodeHandlerPost (req: Request, res: Response, next: NextFunction): void {
+    try {
+      QRCode.toString(req.body.url, { type: 'svg' }, (err, buffer) => {
+        if (err != null) {
+          next(new AppError(500, err.message))
+        }
+        console.log(buffer)
+        res.render('qrcode', { buffer })
+      })
+    } catch (_error) {
+      next(new AppError(400, 'Make sure that the url is valid'))
+    }
+  }
+
+  private qrCodeHandlerGet (req: Request, res: Response, next: NextFunction): void {
+    res.render('qrcode')
   }
 };
 
